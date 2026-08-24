@@ -734,21 +734,10 @@ def get_project_outputs(
     """
     # accomodate snakemake version 8 and 9 difference
     try:
-<<<<<<< HEAD
         with open(workflow.source_path(f"{rule_dict_path}"), "r") as file:
             rule_dict = yaml.safe_load(file)
     except FileNotFoundError:
          with open(workflow.source_path(f"../{rule_dict_path}"), "r") as file:
-=======
-        print(f"test1")
-        print(rule_dict_path)
-        with open(workflow.source_path(f"{rule_dict_path}"), "r") as file:
-            rule_dict = yaml.safe_load(file)
-    except FileNotFoundError:
-        print("test2")
-        print(workflow.source_path(f"../{rule_dict_path}"))
-        with open(workflow.source_path(f"../{rule_dict_path}"), "r") as file:
->>>>>>> 85e84b2 (feat: add new pipelines from afra majida)
             rule_dict = yaml.safe_load(file)
 
     selection = [
