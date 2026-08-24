@@ -176,3 +176,94 @@ rule copy_antismash:
         mkdir {output.dir}
         (cd {output.dir} && for item in $(ls $base_dir/{input.dir}); do ln -s $base_dir/{input.dir}/$item $(basename $item); done) 2>> {log}
         """
+
+rule antismash_json_extract:
+    input:
+        json = "data/interim/antismash/{version}/{strains}/{strains}.json",
+    output:
+        cdss = temp("data/interim/database/as_{version}/{strains}/{strains}_cdss.json"),
+        dna_sequences = temp("data/interim/database/as_{version}/{strains}/{strains}_dna_sequences.json"),
+        regions = temp("data/interim/database/as_{version}/{strains}/{strains}_regions.json"),
+    conda:
+        "../envs/bgc_analytics.yaml"
+    log: "logs/database/scatter/as_{version}_json_extract_{strains}.log"
+    params:
+        outdir = "data/interim/database/as_{version}/{strains}",
+    shell:
+        """
+        python workflow/bgcflow/bgcflow/database/bgc_meta.py {input.json} {params.outdir} {wildcards.strains} 2>> {log}
+        """
+
+rule build_dna_sequences_table:
+    input:
+        dna_sequences = lambda wildcards: expand("data/interim/database/as_{version}/{strains}/{strains}_dna_sequences.json",
+                                         version=wildcards.version,
+                                         strains=[s for s in list(PEP_PROJECTS[wildcards.name].sample_table.index)]),
+    output:
+        dna_sequences = "data/processed/{name}/data_warehouse/{version}/dna_sequences.parquet",
+    conda:
+        "../envs/bgc_analytics.yaml"
+    log: "logs/database/gather/as_{version}_dna_sequences_gather_{name}.log"
+    params:
+        index_key = "sequence_id",
+    shell:
+        """
+        python workflow/bgcflow/bgcflow/database/gather_to_parquet.py '{input.dna_sequences}' {params.index_key} {output.dna_sequences} 2>> {log}
+        """
+
+rule build_regions_table:
+    input:
+        regions = lambda wildcards: expand("data/interim/database/as_{version}/{strains}/{strains}_regions.json",
+                                         version=wildcards.version,
+                                         strains=[s for s in list(PEP_PROJECTS[wildcards.name].sample_table.index)]),
+        mapping_dir = "data/interim/bgcs/{name}/{version}",
+    output:
+        regions = "data/processed/{name}/data_warehouse/{version}/regions.parquet",
+    conda:
+        "../envs/bgc_analytics.yaml"
+    log: "logs/database/gather/as_{version}_regions_gather_{name}.log"
+    params:
+        index_key = "region_id",
+        exclude = "_regions.json"
+    shell:
+        """
+        python workflow/bgcflow/bgcflow/database/gather_to_parquet_with_correction.py '{input.regions}' {input.mapping_dir} {output.regions} {params.exclude} {params.index_key} 2>> {log}
+ 2>> {log}
+        """
+
+rule build_cdss_table:
+    input:
+        cdss = lambda wildcards: expand("data/interim/database/as_{version}/{strains}/{strains}_cdss.json",
+                                         version=wildcards.version,
+                                         strains=[s for s in list(PEP_PROJECTS[wildcards.name].sample_table.index)]),
+        mapping_dir = "data/interim/bgcs/{name}/{version}",
+    output:
+        cdss = "data/processed/{name}/data_warehouse/{version}/cdss.parquet",
+    conda:
+        "../envs/bgc_analytics.yaml"
+    log: "logs/database/gather/as_{version}_cdss_gather_{name}.log"
+    params:
+        index_key = "cds_id",
+        exclude = "_cdss.json"
+    shell:
+        """
+        python workflow/bgcflow/bgcflow/database/gather_to_parquet_with_correction.py '{input.cdss}' {input.mapping_dir} {output.cdss} {params.exclude} {params.index_key} 2>> {log}
+ 2>> {log}
+        """
+
+rule build_warehouse:
+    input:
+        cdss = "data/processed/{name}/data_warehouse/{version}/cdss.parquet",
+        regions = "data/processed/{name}/data_warehouse/{version}/regions.parquet",
+        dna_sequences = "data/processed/{name}/data_warehouse/{version}/dna_sequences.parquet",
+    output:
+        log = "data/processed/{name}/data_warehouse/{version}/database.log",
+    conda:
+        "../envs/bgc_analytics.yaml"
+    log: "logs/database/report/database_{version}_{name}.log"
+    shell:
+        """
+        echo {input.cdss} >> {output.log}
+        echo {input.regions} >> {output.log}
+        echo {input.dna_sequences} >> {output.log}
+        """

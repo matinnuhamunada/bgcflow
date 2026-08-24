@@ -477,7 +477,7 @@ def get_fasta_inputs(name, df_samples):
         df_samples {pd.DataFrame} -- sample table
 
     Returns:
-        output {list} -- list of fasta files
+        d {list} -- list of fasta files
     """
     selection = [i for i in df_samples.index if name in df_samples.loc[i, "name"]]
     output = [f"data/interim/fasta/{s}.fna" for s in selection]
@@ -734,10 +734,21 @@ def get_project_outputs(
     """
     # accomodate snakemake version 8 and 9 difference
     try:
+<<<<<<< HEAD
         with open(workflow.source_path(f"{rule_dict_path}"), "r") as file:
             rule_dict = yaml.safe_load(file)
     except FileNotFoundError:
          with open(workflow.source_path(f"../{rule_dict_path}"), "r") as file:
+=======
+        print(f"test1")
+        print(rule_dict_path)
+        with open(workflow.source_path(f"{rule_dict_path}"), "r") as file:
+            rule_dict = yaml.safe_load(file)
+    except FileNotFoundError:
+        print("test2")
+        print(workflow.source_path(f"../{rule_dict_path}"))
+        with open(workflow.source_path(f"../{rule_dict_path}"), "r") as file:
+>>>>>>> 85e84b2 (feat: add new pipelines from afra majida)
             rule_dict = yaml.safe_load(file)
 
     selection = [

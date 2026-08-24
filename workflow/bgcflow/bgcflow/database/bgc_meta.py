@@ -85,10 +85,39 @@ def region_table_builder(f, accession):
         }
     """
     # grab region values
+
+
+def region_table_builder(f, accession):
     region_number = f["qualifiers"]["region_number"][0]
     region_id = f"{accession}.region{str(region_number).zfill(3)}"
     location = f["location"].strip("[").strip("]")
-    start_pos, end_pos = location.split(":")
+    logging.info(f"Processing location: {location}")
+
+    # Handle join{} compound locations (e.g. cross-origin wraparound regions)
+    # e.g. "join{[3941489:3974023](+), [0:105296](+)}"
+    if location.startswith("join{"):
+        import re
+
+        coords = re.findall(r"\[?(\d+):(\d+)\]?", location)
+        if not coords:
+            raise ValueError(f"Could not parse join location: {location}")
+        # Spanning region: use min start and max end across all segments
+        all_starts = [int(s) for s, e in coords]
+        all_ends = [int(e) for s, e in coords]
+        start_pos = str(min(all_starts))
+        end_pos = str(max(all_ends))
+        logging.warning(
+            f"join{{}} location detected — using span [{start_pos}:{end_pos}]"
+        )
+    else:
+        # Strip any residual brackets/strand info, keep only digits and colon
+        import re
+
+        digits_only = re.sub(r"[^\d:]", "", location)
+        if digits_only != location:
+            logging.warning(f"Unusual location format: {location}")
+            logging.info(f"Keeping only digits: {digits_only}")
+        start_pos, end_pos = digits_only.split(":")
     contig_edge = f["qualifiers"]["contig_edge"][0]
     # fill values
     value = {
