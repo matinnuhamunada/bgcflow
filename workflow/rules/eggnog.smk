@@ -30,5 +30,6 @@ rule eggnog:
         """
         mkdir -p {output.eggnog_dir}
         mkdir -p {output.tempdir}
-        emapper.py -i {input.faa} --decorate_gff "yes" --excel --cpu {threads} -o {wildcards.strains} --output_dir {output.eggnog_dir} --data_dir {input.eggnog_db} --temp_dir {output.tempdir} &>> {log}
+        emapper.py -i {input.faa} --dmnd_db {input.dmnd} --decorate_gff "yes" --excel --cpu {threads} -o {wildcards.strains} --output_dir {output.eggnog_dir} --data_dir {input.eggnog_db} --temp_dir {output.tempdir} &>> {log}
         """
+

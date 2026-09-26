@@ -14,7 +14,6 @@ rule copy_mibig_table:
 
 rule csv_to_parquet:
     input:
-        csv=final_outputs,
         mibig="data/processed/{name}/tables/df_mibig_bgcs.csv"
     output:
         parquet="data/processed/{name}/data_warehouse/tables/df_mibig_bgcs.parquet",

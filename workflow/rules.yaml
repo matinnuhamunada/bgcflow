@@ -259,3 +259,37 @@ amrfinderplus:
   - https://github.com/ncbi/amr
   references:
   - "Feldgarden M, Brover V, Gonzalez-Escalona N, Frye JG, Haendiges J, Haft DH, Hoffmann M, Pettengill JB, Prasad AB, Tillman GE, Tyson GH, Klimke W. AMRFinderPlus and the Reference Gene Catalog facilitate examination of the genomic links among antimicrobial resistance, stress response, and virulence. Sci Rep. 2021 Jun 16;11(1):12728. doi: 10.1038/s41598-021-91456-0. PMID: 34135355; PMCID: PMC8208984."
+ppanggolin:
+  final_output: "data/processed/{name}/ppanggolin/genome/pangenome.h5"
+  description: Depicting microbial species diversity via a Partitioned PanGenome Graph Of Linked Neighbors
+  category: Comparative Genomics
+  link:
+  - https://github.com/labgem/PPanGGOLiN
+  references:
+  - "Gautreau G et al. (2020) PPanGGOLiN: Depicting microbial diversity via a partitioned pangenome graph. PLOS Computational Biology 16(3): e1007732. https://doi.org/10.1371/journal.pcbi.1007732"
+ppanggolin_roary:
+  final_output: "data/processed/{name}/ppanggolin/genome_roary/gexf"
+  description: Export Roary to PPanGGOLiN partitioned graph and Gephi GEXF format
+  category: Comparative Genomics
+  link:
+  - https://github.com/labgem/PPanGGOLiN
+  references:
+  - "Gautreau G et al. (2020) PPanGGOLiN: Depicting microbial diversity via a partitioned pangenome graph. PLOS Computational Biology 16(3): e1007732. https://doi.org/10.1371/journal.pcbi.1007732"
+dbcan:
+  final_output: "data/processed/{name}/tables/df_cazyme.csv"
+  description: Carbohydrate-Active enZYmes (CAZyme) annotation using dbCAN HMM database
+  category: Functional Annotation
+  link:
+  - https://bcb.unl.edu/dbCAN2/
+  references:
+  - "Zhang H et al. (2018) dbCAN2: a meta server for automated carbohydrate-active enzyme annotation. Nucleic Acids Research 46(W1): W95-W101. https://doi.org/10.1093/nar/gky418"
+cazyme_gexf:
+  final_output: "data/processed/{name}/ppanggolin/genome_roary/gexf/pangenomeGraph_annotated.gexf"
+  description: PPanGGOLiN pangenome graph enriched with CAZyme family node attributes for Gephi visualization
+  category: Comparative Genomics
+  link:
+  - https://github.com/labgem/PPanGGOLiN
+  references:
+  - "Gautreau G et al. (2020) PPanGGOLiN: Depicting microbial diversity via a partitioned pangenome graph. PLOS Computational Biology 16(3): e1007732. https://doi.org/10.1371/journal.pcbi.1007732"
+
+

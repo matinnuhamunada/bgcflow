@@ -15,7 +15,7 @@ rule bigscape2:
     threads: 64
     shell:
         """
-        bigscape cluster -i {input.antismash_dir} -o {params.bigscape2_dir} -c {threads} --gcf-cutoffs 0.3,0.4,0.5 --include-singletons --label {params.label} --hybrids-off --mibig-version 4.0 -p {params.pfam} --verbose &>> {log}
+        bigscape cluster -i {input.antismash_dir} -o {params.bigscape2_dir} -c {threads} --gcf-cutoffs 0.3,0.4,0.5 --include-singletons --label {params.label} --hybrids-off --mibig-version 4.0 -p {params.pfam} &>> {log}
         """
 
 
@@ -40,7 +40,7 @@ rule bigscape2_to_cytoscape:
     input:
         index="data/interim/bigscape2/{name}_antismash_{version}/index.html",
         bgc_mapping="data/interim/bgcs/{name}/{name}_antismash_{version}.csv",
-        mibig_bgc_table="resources/mibig/df_mibig_bgcs.csv/",
+        mibig_bgc_table="resources/mibig/df_mibig_bgcs.csv",
         as_dir="data/interim/bgcs/{name}/{version}",
         df_genomes_path="data/processed/{name}/tables/df_antismash_{version}_summary.csv",
     output:

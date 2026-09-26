@@ -51,8 +51,9 @@ rule eggnog_roary:
         """
         mkdir -p {output.eggnog_dir}
         mkdir -p {output.tempdir}
-        emapper.py -i {params.faa} --translate --itype "CDS" --excel --cpu {threads} -o {wildcards.name} --output_dir {output.eggnog_dir} --data_dir {input.eggnog_db} --temp_dir {output.tempdir} &>> {log}
+        emapper.py -i {params.faa} --dmnd_db {input.dmnd} --translate --itype "CDS" --excel --cpu {threads} -o {wildcards.name} --output_dir {output.eggnog_dir} --data_dir {input.eggnog_db} --temp_dir {output.tempdir} &>> {log}
         """
+
 
 rule eggnog_roary_result_copy:
     input:

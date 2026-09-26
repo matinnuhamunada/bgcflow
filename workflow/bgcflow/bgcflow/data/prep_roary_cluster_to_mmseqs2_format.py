@@ -28,7 +28,7 @@ def export_paired_values(input_file, output_file):
 
     # Process the DataFrame and create paired values
     logging.info("Processing input data...")
-    data = {k: v.split("\t") for k, v in df_cluster.to_dict()[1].items()}
+    data = {k: [gene.strip() for gene in v.split("\t") if gene.strip()] for k, v in df_cluster.to_dict()[1].items()}
     paired_list = [(key, item) for key, values in data.items() for item in values]
 
     # Export the paired values to the output file

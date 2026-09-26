@@ -53,9 +53,9 @@ final_outputs = get_final_output(DF_SAMPLES, PEP_PROJECTS, rule_dict_path="rules
 
 rule all:
     input:
-        expand("data/processed/{name}/tables/df_gtdb_meta.csv", name=PROJECT_IDS),
         final_outputs,
         expand("data/processed/{name}/data_warehouse/tables/df_mibig_bgcs.parquet", name=PROJECT_IDS)
+
 
 # Create place holder for resources defined in each modules, will be added if module is included, and passed to create custom_resource_dir
 resource_mapping = {}
@@ -66,6 +66,8 @@ include: "rules/prokka.smk"
 include: "rules/antismash.smk"
 resource_mapping["antismash_db"] = str(antismash_db_path)
 include: "rules/roary.smk"
+include: "rules/ppanggolin.smk"
+include: "rules/ppanggolin_roary.smk"
 include: "rules/bigscape.smk"
 include: "rules/bigscape2.smk"
 resource_mapping["BiG-SCAPE"] = str(rules.install_bigscape.output.bigscape)
@@ -90,7 +92,10 @@ include: "rules/bgc.smk"
 include: "rules/diamond.smk"
 include: "rules/deeptfactor.smk"
 include: "rules/cblaster.smk"
+include: "rules/dbcan.smk"
+resource_mapping["dbcan_db"] = str(rules.install_dbcan_db.output.hmm)
 include: "rules/data_warehouse.smk"
+
 include: "rules/convert_genbank.smk"
 include: "rules/gecco.smk"
 include: "rules/amrfinderplus.smk"

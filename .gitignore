@@ -5,6 +5,11 @@
 data/*
 resources/
 config/
+AUDIT_NOTES.md
+run_pipeline.sh
+run_*.sh
+run_*.log
+
 workflow/report/*
 !workflow/report/images/rulegraph.svg
 !workflow/report/images/.gitkeep
@@ -26,3 +31,8 @@ plugins/
 metabase.db*
 pytest-coverage.txt
 .coverage
+
+# Graphify
+graphify-out/
+.graphify*
+

@@ -1,0 +1,10 @@
+name: dbcan
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - hmmer=3.3.2
+  - pyhmmer
+  - pandas
+  - requests

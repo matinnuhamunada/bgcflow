@@ -231,23 +231,38 @@ def get_ncbi_taxon_GTDB(accession, api_base_url, release="R207"):
     Given an NCBI accession, return a json object of taxonomic information from GTDB API
     """
 
-    def gtdb_api_request(accession, api_type):
+    def gtdb_api_request(accession, api_type, max_retries=5):
+        import time, random
         if api_type == "taxonomy":
             api_url = f"{api_base_url}/genome/{accession}/taxon-history"
         elif api_type == "summary":
             api_url = f"{api_base_url}/genome/{accession}/card"
+        
         logging.debug(f"Requesting GTDB API: {api_url}")
-        response = requests.get(api_url)
+        
+        for attempt in range(max_retries):
+            # Safe polite pacing (~3-5 req/s)
+            time.sleep(random.uniform(0.2, 0.5))
+            try:
+                response = requests.get(api_url, timeout=15)
+                if response.status_code == 200:
+                    js = response.json()
+                    return js, api_url
+                elif response.status_code in [429, 500, 502, 503, 504]:
+                    wait_time = 2.0 * (attempt + 1) + random.uniform(0.5, 1.5)
+                    logging.warning(f"GTDB API rate limited ({response.status_code}). Retrying in {wait_time:.1f}s (Attempt {attempt+1}/{max_retries})...")
+                    time.sleep(wait_time)
+                else:
+                    logging.warning(f"GTDB API returned status {response.status_code} for {api_url}")
+                    return [], api_url
+            except (requests.RequestException, json.JSONDecodeError) as e:
+                wait_time = 2.0 * (attempt + 1) + random.uniform(0.5, 1.5)
+                logging.warning(f"GTDB API connection/decode issue ({e}). Retrying in {wait_time:.1f}s (Attempt {attempt+1}/{max_retries})...")
+                time.sleep(wait_time)
 
-        try:
-            js = response.json()
-        except json.JSONDecodeError:
-            logging.critical(
-                f"Cannot decode response from GTDB API. Make sure this is a valid url: {api_url}"
-            )
-            raise
+        logging.warning(f"Max retries reached for GTDB API ({api_url}). Returning empty result.")
+        return [], api_url
 
-        return js, api_url
 
     # Mapping to bgcflow format
     level_dict = {
